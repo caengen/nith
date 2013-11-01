@@ -2,8 +2,8 @@
 #include <stdbool.h>
 #include "binaryNode.h"
 
-bool insert(BinaryNode *, char *);
+bool insert(BinaryTree *, BinaryNode *);
 
-bool delete(BinaryNode *, char *);
+bool delete(BinaryTree *, BinaryNode *);
 
 bool search(char *);

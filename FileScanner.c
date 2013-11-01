@@ -5,7 +5,9 @@
 #include <sys/types.h>
 #include "FileScanner.h"
 
-void printfile(char *path) {
+/* TODO: Merge this file with BinaryFunctions.c */
+
+BinaryTree createBinaryTree(char *) {
 	FILE * fp;
 	char * line = NULL;
 	size_t len = 0;
@@ -24,9 +26,6 @@ void printfile(char *path) {
 	if (line)
 	   free(line);
 	exit(EXIT_SUCCESS);
-}
-
-BinaryTree createBinaryTree(char *) {
 
 	return NULL;
 }

@@ -2,8 +2,6 @@
 #include <stdio.h>
 #include "binaryTree.h"
 
-void printfile(char *);
-
 BinaryTree createBinaryTree(char *);
 
 /*
