@@ -4,6 +4,7 @@
 #include "FileScanner.h"
 
 int main(void) {
+	BinaryNode firstNode;
 	
 	printfile("./pg4300.txt");
 	

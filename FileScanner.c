@@ -9,20 +9,26 @@ void printfile(char *path) {
 	FILE * fp;
 	char * line = NULL;
 	size_t len = 0;
-	ssize_t read;
+	size_t line_number = 0;
+	ssize_t line_length;
 
 	fp = fopen(path, "r");
 	if (fp == NULL)
 	   exit(EXIT_FAILURE);
 
-	while ((read = getline(&line, &len, fp)) != -1) {
-	   printf("Retrieved line of length %zu :\n", read);
-	   printf("%s", line);
+	while ((line_length = getline(&line, &len, fp)) != -1) {
+	   printf("%zu:%s", line_number, line);
+	   ++line_number;
 	}
 
 	if (line)
 	   free(line);
 	exit(EXIT_SUCCESS);
+}
+
+BinaryTree createBinaryTree(char *) {
+
+	return NULL;
 }
 
 /*
