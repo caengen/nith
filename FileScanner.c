@@ -1,8 +1,11 @@
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <stdbool.h>
 #include <sys/types.h>
+#include "binaryNode.h"
+#include "binaryTree.h"
 #include "FileScanner.h"
 
 /* TODO: Merge this file with BinaryFunctions.c */
@@ -11,24 +14,51 @@ BinaryTree createBinaryTree(char *) {
 	FILE * fp;
 	char * line = NULL;
 	size_t len = 0;
-	size_t line_number = 0;
-	ssize_t line_length;
+	size_t lineNumber = 1;
+	ssize_t lineLength;
+
+	BinaryTree tree;
+	tree = 
 
 	fp = fopen(path, "r");
 	if (fp == NULL)
 	   exit(EXIT_FAILURE);
 
-	while ((line_length = getline(&line, &len, fp)) != -1) {
-	   printf("%zu:%s", line_number, line);
-	   ++line_number;
+	while ((lineLength = getline(&line, &len, fp)) != -1) {
+	   printf("%zu:%s", lineNumber, line);
+	   createBinaryNodes(tree, line, lineNumber, lineLength);
+	   ++lineNumber;
 	}
 
-	if (line)
-	   free(line);
-	exit(EXIT_SUCCESS);
+	if (line) free(line);
 
-	return NULL;
+	return tree;
 }
+
+void createBinaryNodes(BinaryTree tree, char *line, size_t lineNumber, ssize_t lineLength) {
+	char *word = NULL;
+	size_t start = 0;
+	size_t end = 0;
+
+	for (int i = 0; i < lineLength; ++i) {
+		if (line[i] == ' ') {
+			end = i-1;
+
+			word = substring(line, start, end);
+
+			bool exists = bf_search(word);
+
+			if(!exists) {
+				bf_insert(word);
+			}
+		}
+		start = end+1;
+	}
+
+	if(word) free(word);
+}
+
+
 
 /*
 char* readline(char *line, int * line_size, FILE *file) {

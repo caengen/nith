@@ -4,6 +4,8 @@
 
 BinaryTree createBinaryTree(char *);
 
+void createBinaryNodes(BinaryTree *, char *, size_t, ssize_t);
+
 /*
 void begin(FILE *, char *, char *);
 
@@ -16,4 +18,3 @@ char* readline(char *, int *, FILE *);
 char* next();
 
 char* nextLine();*/
-
