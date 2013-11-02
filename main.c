@@ -6,9 +6,7 @@
 
 int main(void) {
 	
-	
-	printfile("./pg4300.txt");
-	BinaryTree bt = createBinaryTree("./pg4300.txt");
+	BinaryTree bt = createBinaryTree("./test.txt");
 	
 	return EXIT_SUCCESS; 
 }
