@@ -26,8 +26,7 @@ BinaryTree createBinaryTree(char *) {
 
 	while ((lineLength = getline(&line, &len, fp)) != -1) {
 	   printf("%zu:%s", lineNumber, line);
-	   createBinaryNodes(tree, line, lineNumber, lineLength);
-	   ++lineNumber;
+	   createBinaryNodes(tree, line, lineNumber++, lineLength);
 	}
 
 	if (line) free(line);
