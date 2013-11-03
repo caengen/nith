@@ -38,6 +38,7 @@ void createBinaryNodes(BinaryTree tree, char *line, size_t lineNumber, ssize_t l
 	char *word = NULL;
 	size_t start = 0;
 	size_t end = 0;
+	size_t wordNumber = 1;
 
 	for (int i = 0; i < lineLength; ++i) {
 		if (line[i] == ' ') {
@@ -48,10 +49,20 @@ void createBinaryNodes(BinaryTree tree, char *line, size_t lineNumber, ssize_t l
 			bool exists = bf_search(word);
 
 			if(!exists) {
-				bf_insert(word);
+				BinaryNode node {
+					.key = word,
+					.left = NULL,
+					.right = NULL,
+					.lineNumber = lineNumber,
+					.wordNumber = wordNumber,
+					.lineLength = lineLength;
+
+				};
+				bf_insert(tree, node);
 			}
 		}
 		start = end+1;
+		++wordNumber;
 	}
 
 	if(word) free(word);
