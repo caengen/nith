@@ -10,7 +10,7 @@
 
 /* TODO: Merge this file with BinaryFunctions.c */
 
-BinaryTree createBinaryTree(char *) {
+BinaryTree createBinaryTree(char *path) {
 	FILE * fp;
 	char * line = NULL;
 	size_t len = 0;
@@ -18,7 +18,6 @@ BinaryTree createBinaryTree(char *) {
 	ssize_t lineLength;
 
 	BinaryTree tree;
-	tree = 
 
 	fp = fopen(path, "r");
 	if (fp == NULL)

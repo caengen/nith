@@ -2,6 +2,6 @@
 #include "binaryNode.h"
 
 typedef struct binaryTree {
-	BinaryNode* nodes;
+	BinaryNode* node;
 	size_t size;
 } BinaryTree;
