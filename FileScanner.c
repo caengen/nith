@@ -7,17 +7,17 @@
 #include "binaryNode.h"
 #include "binaryTree.h"
 #include "FileScanner.h"
+#include "BinaryFunctions.h"
 
 /* TODO: Merge this file with BinaryFunctions.c */
-
-BinaryTree createBinaryTree(char *path) {
+BinaryTree* createBinaryTree(char *path) {
 	FILE * fp;
 	char * line = NULL;
 	size_t len = 0;
 	size_t lineNumber = 1;
-	ssize_t lineLength;
+	size_t lineLength;
 
-	BinaryTree tree;
+	BinaryTree *tree = malloc(sizeof(BinaryTree));
 
 	fp = fopen(path, "r");
 	if (fp == NULL)
@@ -33,8 +33,8 @@ BinaryTree createBinaryTree(char *path) {
 	return tree;
 }
 
-void createBinaryNodes(BinaryTree tree, char *line, size_t lineNumber, ssize_t lineLength) {
-	char *word = NULL;
+void createBinaryNodes(BinaryTree *tree, char *line, size_t lineNumber, size_t lineLength) {
+	char *word = malloc(sizeof *word);
 	size_t start = 0;
 	size_t end = 0;
 	size_t wordNumber = 1;
@@ -43,21 +43,20 @@ void createBinaryNodes(BinaryTree tree, char *line, size_t lineNumber, ssize_t l
 		if (line[i] == ' ') {
 			end = i-1;
 
-			word = substring(line, start, end);
+			word = substring(start, end, line, word, sizeof word);
 
-			bool exists = bf_search(word);
+			bool exists = bf_search(tree, word);
 
 			if(!exists) {
-				BinaryNode node {
+				BinaryNode node = {
 					.key = word,
 					.left = NULL,
 					.right = NULL,
 					.lineNumber = lineNumber,
 					.wordNumber = wordNumber,
-					.lineLength = lineLength;
-
+					.lineLength = lineLength
 				};
-				bf_insert(tree, node);
+				bf_insert(tree, &node);
 			}
 		}
 		start = end+1;
@@ -67,40 +66,12 @@ void createBinaryNodes(BinaryTree tree, char *line, size_t lineNumber, ssize_t l
 	if(word) free(word);
 }
 
-
-
-/*
-char* readline(char *line, int * line_size, FILE *file) {
-	//memset(*line, '\n', line_size);
-
-	return NULL;
-	
+char* substring(size_t start, size_t end, char *src, char *dst, size_t size) {
+   int count = end - start;
+   if ( count >= --size )
+   {
+      count = size;
+   }
+   sprintf(dst, "%.*s", count, src + start);
+   return dst;
 }
-
-void begin(FILE *fp, char *path, char *line) {
-	line = (char*) malloc(sizeof(char) * 512);
-}
-
-void end(FILE *fp, char *line) {
-	if(line) free(line);
-	fclose(fp);
-}
-
-void scanfile(char *path) {
-	FILE *fp = fopen(path, "r");
-	char *line = NULL;	
-
-	begin(fp, path, line);
-
-	if (fp == NULL) {
-		exit(EXIT_FAILURE);
-	}
-
-	while ( fgets(line, 512, fp) != NULL ) {
-		printf("%s", line);
-		line = NULL;
-	}
-
-	end(fp, line);
-}
-*/

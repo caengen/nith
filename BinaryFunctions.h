@@ -11,4 +11,4 @@ bool bf_search(BinaryTree *, char *);
 
 void nodeInsertion(BinaryNode *, BinaryNode *, BinaryNode *, bool);
 
-void printTree(BinaryTree);
+void printTree(BinaryTree *);

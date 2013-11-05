@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include "binaryNode.h"
 #include "binaryTree.h"
@@ -79,7 +80,7 @@ bool bf_search(BinaryTree *tree, char *key) {
 	int cmpres = -1;
 	BinaryNode *node;
 
-	if (tree->size > 0) {
+	if (tree != NULL && tree->size > 0) {
 		node = tree->node;
 	}
 	else {
@@ -101,8 +102,8 @@ bool bf_search(BinaryTree *tree, char *key) {
 	return found;
 }
 
-void printTree(BinaryTree tree) {
-	printf("size of tree is %zu", tree.size);
+void printTree(BinaryTree *tree) {
+	printf("size of tree is %zu", tree->size);
 	/*for(size_t i = 0; i < tree.size; ++i) {
 
 	}*/

@@ -6,7 +6,7 @@
 
 int main(void) {
 	
-	BinaryTree bt = createBinaryTree("./test.txt");
+	BinaryTree *bt = createBinaryTree("./test.txt");
 	printTree(bt);
 	
 	return EXIT_SUCCESS; 
