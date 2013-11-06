@@ -27,7 +27,7 @@ BinaryTree* createBinaryTree(char *path) {
 
 	while ((lineLength = getline(&line, &len, fp)) != -1) {
 	   //printf("%zu:%s", lineNum, line); DEBUG
-	   createBinaryNodes(tree, line, lineNum++, lineLength);
+	   createNodes(tree, line, lineNum++, lineLength);
 	}
 
 	if (line) free(line);
@@ -35,7 +35,7 @@ BinaryTree* createBinaryTree(char *path) {
 	return tree;
 }
 
-void createBinaryNodes(BinaryTree *tree, char *line, size_t lineNum, size_t lineLength) {
+void createNodes(BinaryTree *tree, char *line, size_t lineNum, size_t lineLength) {
 	char *word = malloc(sizeof *word);
 	size_t start = 0;
 	size_t end = 0;
@@ -43,29 +43,18 @@ void createBinaryNodes(BinaryTree *tree, char *line, size_t lineNum, size_t line
 
 	for (int i = 0; i < lineLength; ++i) {
 		if (line[i] == ' ') {
-			end = i-1;
+			end = i;
 
 			word = substring(start, end, line, word, sizeof(word));
 
-			bool exists = rec_search(&tree->node, word);
-			printf("bool exists = %d\n", exists);
-			/*
-			if(!exists) {
-				BinaryNode node = {
-					.key = word,
-					.left = NULL,
-					.right = NULL,
-					.lineNum = lineNum,
-					.wordNum = wordNum,
-					.lineLength = lineLength
-				};
-				bf_insert(tree, &node);
-			}*/
-			if(!exists)
+			BinaryNode *resolved = rec_search(&tree->node, word);
+			
+			if(!resolved) {
 				rec_add(&tree->node, word, lineNum, lineLength, wordNum);
-
+				tree->size++;
+			}
 		}
-		start = end+1;
+		start = end;
 		++wordNum;
 	}
 
@@ -79,5 +68,6 @@ char* substring(size_t start, size_t end, char *src, char *dst, size_t size) {
       count = size;
    }
    sprintf(dst, "%.*s", count, src + start);
+   printf("substring gir %s\n", dst);
    return dst;
 }

@@ -4,6 +4,6 @@
 
 BinaryTree* createBinaryTree(char *);
 
-void createBinaryNodes(BinaryTree *, char *, size_t, size_t);
+void createNodes(BinaryTree *, char *, size_t, size_t);
 
 char* substring(size_t, size_t, char *, char *, size_t);

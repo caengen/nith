@@ -18,7 +18,7 @@ void rec_add(BinaryNode **n, char *word, size_t lineNum, size_t lineLength, size
 		node->lineLength = lineLength;
 
 		*n = node;
-		printf("Laget en node!\n");
+		printf("Laget en node for %s!\n\n", word);
 	} else {
 		if (strcmp(word, node->key) > 0) {
 			rec_add(&node->right, word, lineNum, lineLength, wordNum);
@@ -28,25 +28,27 @@ void rec_add(BinaryNode **n, char *word, size_t lineNum, size_t lineLength, size
 	}
 }
 
-bool rec_search(BinaryNode **n, char *word) {
+BinaryNode * rec_search(BinaryNode **n, char *word) {
 	BinaryNode *node = *n;
-	bool found = false;
 
-	if(node == NULL) {
-		return false;
+	if(!node) {
+		return NULL;
 	} else {
 		int r = strcmp(word, node->key);
-		printf("comparing %s and %s\n", word, node->key);
+		/*DEBUG*/printf("comparing %s and %s\n", word, node->key);
+
 		if (r == 0) {
-			return true;
+			return node;
 		} else if (r > 0) {
-			found = found | rec_search(&node->right, word);
+			//printf("Going right\n");
+			rec_search(&node->right, word);
 		} else {
-			found = found | rec_search(&node->left, word);
+			//printf("Going left\n");
+			rec_search(&node->left, word);
 		}
 	}
 
-	return found;
+	return NULL;
 }
 
 bool bf_delete(BinaryTree *tree, BinaryNode *other) {
