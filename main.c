@@ -7,7 +7,7 @@
 int main(void) {
 	
 	BinaryTree *bt = createBinaryTree("./test.txt");
-	printTree(bt);
-	
+	//printTree(&bt->node);
+	printf("%s", bt->node->key);
 	return EXIT_SUCCESS; 
 }

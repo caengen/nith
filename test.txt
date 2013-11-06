@@ -1,5 +1,1 @@
-Dette er en test av binærtreet
-I denne teksten kommer det til å være flere ord
-noen av de vil
-være
-like og andre ikke er en test kommer flere ord
+Dette er en er 

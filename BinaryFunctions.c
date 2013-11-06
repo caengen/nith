@@ -6,105 +6,60 @@
 #include "binaryTree.h"
 #include "BinaryFunctions.h"	
 
-bool bf_insert(BinaryTree *tree, BinaryNode *other) {
-	bool success = false, stepRight, stepLeft;
-	BinaryNode *node = tree->node, *ahead;
-	int cmpres, cmpresA;
+void rec_add(BinaryNode **n, char *word, size_t lineNum, size_t lineLength, size_t wordNum) {
+	BinaryNode *node = *n;
 
-	while (true) {
-		stepRight = false, stepLeft = false;
-		cmpres = 0, cmpresA = 0;
+	if(node == NULL) {
+		node = malloc(sizeof(BinaryNode));
+		node->key = word;
+		node->left = node->right = NULL;
+		node->lineNum = lineNum;
+		node->wordNum = wordNum;
+		node->lineLength = lineLength;
 
-		//return less than, equal to or greater than zero in cases
-		//of other being less than node, etc.
-		cmpres = strcmp(other->key, node->key);
-		if(cmpres == 0) break;
-
-		ahead = (cmpres < 0) ? node->left : node->right;
-		stepLeft = cmpres < 0;
-		stepRight = !stepLeft;
-		if (ahead != NULL) {
-			//we check if other is the same as ahead
-			cmpresA = strcmp(other->key, ahead->key);
-
-			if(cmpresA == 0) break;
-			
-			//other is bigger than the node ahead and we need to coninue searching
-			//for an appropriate place to insert it
-			else if((stepRight && cmpres > 0) || (stepLeft && cmpres > 0)) {
-				node = ahead;
-				ahead = NULL;
-				continue;
-			}
-
-			//we can insert it here
-			else if((stepRight && cmpres < 0) || (stepLeft && cmpres < 0)) {
-				nodeInsertion(node, ahead, other, stepLeft);
-				tree->size++;
-				//balanceTree(tree);
-				success = true;
-				break;
-			}
+		*n = node;
+		printf("Laget en node!\n");
+	} else {
+		if (strcmp(word, node->key) > 0) {
+			rec_add(&node->right, word, lineNum, lineLength, wordNum);
 		} else {
-			if (stepRight) node->right = other;
-			else node->left = other;
+			rec_add(&node->left, word, lineNum, lineLength, wordNum);
+		}
+	}
+}
+
+bool rec_search(BinaryNode **n, char *word) {
+	BinaryNode *node = *n;
+	bool found = false;
+
+	if(node == NULL) {
+		return false;
+	} else {
+		int r = strcmp(word, node->key);
+		printf("comparing %s and %s\n", word, node->key);
+		if (r == 0) {
+			return true;
+		} else if (r > 0) {
+			found = found | rec_search(&node->right, word);
+		} else {
+			found = found | rec_search(&node->left, word);
 		}
 	}
 
-	return success;
-}
-
-//helper method
-void nodeInsertion(BinaryNode *first, BinaryNode *last, BinaryNode *insertion, bool stepLeft) {
-	if (stepLeft) {
-		first->left = insertion;
-	} else {
-		first->right = insertion;
-	}
-
-	int cmpres = strcmp(insertion->key, last->key);
-
-	if (cmpres < 0) {
-		insertion->right = last;
-	} else {
-		insertion->left = last;
-	}
+	return found;
 }
 
 bool bf_delete(BinaryTree *tree, BinaryNode *other) {
 	return false;
 }
 
-bool bf_search(BinaryTree *tree, char *key) {
-	bool found = false;
-	int cmpres = -1;
-	BinaryNode *node;
+void printTree(BinaryNode **n) {
+	BinaryNode *node = *n;
 
-	if (tree != NULL && tree->size > 0) {
-		node = tree->node;
+	if (node == NULL) {
+		return;
+	} else {
+		printf("%s : %zu", node->key, node->lineNum);
+		printTree(&node->right);
 	}
-	else {
-		return found;
-	}
-
-	while (!found) {
-		cmpres = strcmp(node->key, key);
-		if(cmpres == 0) {
-			found = true;
-			break;
-		}
-
-		node = (cmpres > 0) ? node->left : node->right;
-
-		if (node == NULL) break;
-	}
-
-	return found;
-}
-
-void printTree(BinaryTree *tree) {
-	printf("size of tree is %zu", tree->size);
-	/*for(size_t i = 0; i < tree.size; ++i) {
-
-	}*/
 }

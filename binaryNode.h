@@ -4,7 +4,7 @@
 typedef struct binaryNode {
 	char *key;
 	struct binaryNode *left, *right;
-	size_t lineNumber;
-	size_t wordNumber;
-	ssize_t lineLength;
+	size_t lineNum;
+	size_t wordNum;
+	size_t lineLength;
 } BinaryNode;

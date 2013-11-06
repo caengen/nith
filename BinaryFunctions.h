@@ -3,12 +3,10 @@
 #include "binaryNode.h"
 #include "binaryTree.h"
 
-bool bf_insert(BinaryTree *, BinaryNode *);
+void rec_add(BinaryNode **, char *, size_t, size_t, size_t);
+
+bool rec_search(BinaryNode **, char *);
 
 bool bf_delete(BinaryTree *, BinaryNode *);
 
-bool bf_search(BinaryTree *, char *);
-
-void nodeInsertion(BinaryNode *, BinaryNode *, BinaryNode *, bool);
-
-void printTree(BinaryTree *);
+void printTree(BinaryNode **);
