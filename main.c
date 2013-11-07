@@ -6,9 +6,9 @@
 
 int main(void) {
 	
-	BinaryTree *bt = createBinaryTree("./test.txt");
-	//printf("\nTree size is %zu\n", bt->size);
-	BinaryNode *res = rec_search(&bt->node, "av");
+    BinaryTree *bt = createBinaryTree("./pg4300.txt");
+    printf("Ferdig å legge inn!\n");
+    BinaryNode *res = rec_search(&bt->node, "Nationalgymnasiummuseumsanatoriumandsuspensoriumsordinaryprivatdocent");
 
 	if(res) {
 		printf("Result was key=%s, line=%zu, word=%zu, length=%zu\n", res->key, res->lineNum, res->wordNum, res->lineLength);
