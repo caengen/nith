@@ -9,7 +9,7 @@
 void rec_add(BinaryNode **n, char *word, size_t lineNum, size_t lineLength, size_t wordNum) {
 	BinaryNode *node = *n;
 
-	if(node == NULL) {
+	if(!node) {
 		node = malloc(sizeof(BinaryNode));
 		node->key = word;
 		node->left = node->right = NULL;
@@ -19,12 +19,13 @@ void rec_add(BinaryNode **n, char *word, size_t lineNum, size_t lineLength, size
 
 		*n = node;
 		printf("Laget en node for %s!\n\n", word);
-	}
+	} else {
 		if (strcmp(word, node->key) > 0) {
 			rec_add(&node->right, word, lineNum, lineLength, wordNum);
 		} else if(strcmp(word, node->key) < 0) {
 			rec_add(&node->left, word, lineNum, lineLength, wordNum);
 		}
+	}
 }
 
 BinaryNode * rec_search(BinaryNode **n, char *word) {
@@ -46,7 +47,7 @@ BinaryNode * rec_search(BinaryNode **n, char *word) {
 			rec_search(&node->left, word);
 		}
 	}
-
+	
 	return NULL;
 }
 
@@ -60,7 +61,7 @@ void printTree(BinaryNode **n) {
 	if (node == NULL) {
 		return;
 	} else {
-		printf("%s : %zu", node->key, node->lineNum);
+		printf("%s : %zu\n", node->key, node->lineNum);
 		printTree(&node->right);
 	}
 }

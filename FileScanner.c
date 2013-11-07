@@ -9,10 +9,14 @@
 #include "FileScanner.h"
 #include "BinaryFunctions.h"
 
+char *delims = " ,.-_:;\n!?/&%()[]*'\"$@#+";
+char *word;
+
 /* TODO: Merge this file with BinaryFunctions.c */
 BinaryTree* createBinaryTree(char *path) {
 	FILE * fp;
-	char * line = NULL;
+	//magic num
+	char * line = malloc(sizeof(char)*81);
 	size_t len = 0;
 	size_t lineNum = 1;
 	size_t lineLength;
@@ -27,7 +31,14 @@ BinaryTree* createBinaryTree(char *path) {
 
 	while ((lineLength = getline(&line, &len, fp)) != -1) {
 	   //printf("%zu:%s", lineNum, line); DEBUG
-	   createNodes(tree, line, lineNum++, lineLength);
+	   //createNodes(tree, line, lineNum++, lineLength);
+		word = strtok(line, delims);
+		int wordNum = 1;
+		while(word) {
+			rec_add(&tree->node, word, lineNum, lineLength, wordNum);
+			word = strtok(NULL, delims);
+			wordNum++;
+		}
 	}
 
 	if (line) free(line);
@@ -35,9 +46,10 @@ BinaryTree* createBinaryTree(char *path) {
 	return tree;
 }
 
+/*
 void createNodes(BinaryTree *tree, char *line, size_t lineNum, size_t lineLength) {
-	char *word = malloc(sizeof(char)*128);
-	size_t start = 0;
+	char *word = malloc(sizeof(char)*64);
+	size_t start = 1;
 	size_t end = 0;
 	size_t wordNum = 1;
 
@@ -45,28 +57,31 @@ void createNodes(BinaryTree *tree, char *line, size_t lineNum, size_t lineLength
 		if (line[i] == ' ') {
 			end = i;
 
-			word = substring(start, end, line, word, sizeof(word));
 
-			BinaryNode *resolved = rec_search(&tree->node, word);
+			//word = substring(start, end, line, word, sizeof(word));
+
+			//BinaryNode *resolved = rec_search(&tree->node, word);
 			
-			if(!resolved) {
+			//if(!resolved) {
 				rec_add(&tree->node, word, lineNum, lineLength, wordNum);
 				tree->size++;
-			}
+			//}
 		}
 		start = end;
 		++wordNum;
 	}
 
 	if(word) free(word);
-}
+}*/
 
+/*
 char* substring(size_t start, size_t end, char *src, char *dst, size_t size) {
    int count = end - start;
    if ( count >= --size ) {
       count = size;
    }
    sprintf(dst, "%.*s", count, src + start);
-   printf("substring gir %s\n", dst);
+   printf("substring gir%s\n", dst);
    return dst;
 }
+*/
