@@ -21,8 +21,8 @@ BinaryTree* createBinaryTree(char *path) {
 	size_t lineNum = 1;
 	size_t lineLength;
 
-	BinaryTree *tree = malloc(sizeof(BinaryTree));
-	tree->node = NULL;
+    BinaryTree *tree = malloc(sizeof(BinaryTree));
+    tree->node = NULL;
 	tree->size = 0;
 
 	fp = fopen(path, "r");
@@ -30,18 +30,17 @@ BinaryTree* createBinaryTree(char *path) {
 	   exit(EXIT_FAILURE);
 
 	while ((lineLength = getline(&line, &len, fp)) != -1) {
-	   //printf("%zu:%s", lineNum, line); DEBUG
+       printf("%zu\n", lineNum);
 	   //createNodes(tree, line, lineNum++, lineLength);
 		word = strtok(line, delims);
 		int wordNum = 1;
 		while(word) {
-			rec_add(&tree->node, word, lineNum, lineLength, wordNum);
+            rec_add(&tree->node, NULL, word, lineNum, lineLength, wordNum);
 			word = strtok(NULL, delims);
 			wordNum++;
-		}
+        }
+        lineNum++;
 	}
-
-	if (line) free(line);
 
 	return tree;
 }

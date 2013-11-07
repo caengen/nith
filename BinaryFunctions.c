@@ -6,47 +6,49 @@
 #include "binaryTree.h"
 #include "BinaryFunctions.h"	
 
-void rec_add(BinaryNode **n, char *word, size_t lineNum, size_t lineLength, size_t wordNum) {
+
+void rec_add(BinaryNode **n, BinaryNode * parent, char *word, size_t lineNum, size_t lineLength, size_t wordNum) {
 	BinaryNode *node = *n;
 
 	if(!node) {
 		node = malloc(sizeof(BinaryNode));
-		node->key = word;
+
+        //char buf[128];
+
+        node->key = malloc(sizeof(char)*128);
+        strncpy(node->key, word, 128);
 		node->left = node->right = NULL;
 		node->lineNum = lineNum;
 		node->wordNum = wordNum;
 		node->lineLength = lineLength;
+        node->parent = parent;
 
-		*n = node;
-		printf("Laget en node for %s!\n\n", word);
-	} else {
+        *n = node;
+    }
+
 		if (strncmp(word, node->key,100) > 0) {
-			rec_add(&node->right, word, lineNum, lineLength, wordNum);
+            rec_add(&node->right, node, word, lineNum, lineLength, wordNum);
 		} else if(strncmp(word, node->key,100) < 0) {
-			rec_add(&node->left, word, lineNum, lineLength, wordNum);
+            rec_add(&node->left, node, word, lineNum, lineLength, wordNum);
 		}
-	}
+
+
 }
 
 BinaryNode * rec_search(BinaryNode **n, char *word) {
 	BinaryNode *node = *n;
 
 
-	if(!node) {
-		printf("Did not find word!\n");
+    if(!node) {
 		return NULL;
 	}
 
-	printf("Node contents: %s [word: %s]\n", node->key, word);
-
 	int r = strncmp(word, node->key,100);
 
-	if (r > 0) {
-		printf("Going right\n");
-		rec_search(&node->right, word);
-	} else if(r < 0) {
-		printf("Going left\n");
-		rec_search(&node->left, word);
+    if (r > 0) {
+        return rec_search(&node->right, word);
+    } else if(r < 0) {
+        return rec_search(&node->left, word);
 	}
 	
 	printf("Did find word\n");
