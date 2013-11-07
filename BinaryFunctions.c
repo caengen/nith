@@ -19,13 +19,12 @@ void rec_add(BinaryNode **n, char *word, size_t lineNum, size_t lineLength, size
 
 		*n = node;
 		printf("Laget en node for %s!\n\n", word);
-	} else {
+	}
 		if (strcmp(word, node->key) > 0) {
 			rec_add(&node->right, word, lineNum, lineLength, wordNum);
-		} else {
+		} else if(strcmp(word, node->key) < 0) {
 			rec_add(&node->left, word, lineNum, lineLength, wordNum);
 		}
-	}
 }
 
 BinaryNode * rec_search(BinaryNode **n, char *word) {

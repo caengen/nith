@@ -36,7 +36,7 @@ BinaryTree* createBinaryTree(char *path) {
 }
 
 void createNodes(BinaryTree *tree, char *line, size_t lineNum, size_t lineLength) {
-	char *word = malloc(sizeof *word);
+	char *word = malloc(sizeof(char)*128);
 	size_t start = 0;
 	size_t end = 0;
 	size_t wordNum = 1;
@@ -63,8 +63,7 @@ void createNodes(BinaryTree *tree, char *line, size_t lineNum, size_t lineLength
 
 char* substring(size_t start, size_t end, char *src, char *dst, size_t size) {
    int count = end - start;
-   if ( count >= --size )
-   {
+   if ( count >= --size ) {
       count = size;
    }
    sprintf(dst, "%.*s", count, src + start);
