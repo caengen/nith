@@ -8,18 +8,18 @@
  */
 
 
-/* When running main the first argument (ignoring the ./innt itself) should
+/* When running main the first argument (ignoring the execute argument itself) should
  * be the file.txt you want read, and the second argument should be the word
- * you want to search for.
+ * you want to search for. 
  *
  */
 int main(int argc, char** argv) {
 	
-    BinaryTree *bt = createBinaryTreeFromFile("pg4300.txt");
+    BinaryTree *bt = createBinaryTreeFromFile(argv[1]);
 
     printf("Binary tree created.\n");
 
-    BinaryNode *res = search(&bt->node, "penis");
+    BinaryNode *res = search(&bt->node, argv[2]);
 
 	if(res) {
 		printf("Word was %20s\nAt line %21zu\nWord placement in line %6zu\nLine total length %11zu\n", res->val, res->lineNum, res->wordNum, res->lineLength);
