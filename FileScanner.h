@@ -5,6 +5,6 @@
  * @last edit	08/11/2013
  */
 
-BinaryTree* createBinaryTreeFromFile(char *);
+BinaryTree* createBinaryTreeFromFile(int argc, char** argv);
 
 void closeFileScanner(void);

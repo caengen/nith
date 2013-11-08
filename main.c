@@ -33,17 +33,18 @@ void readSearchInput(bool *finished, char *searchWord) {
 	}
 }
 
-/* When running main the first argument (ignoring the execute argument itself) should
- * be the file.txt you want read, and the second argument should be the word
- * you want to search for.
- *
+/* When running main you pass all the files you want to read as
+ * arguments. Words from all files are added into the tree as if
+ * they were a single document, with the first file argument being
+ * the lead of the "single document".
+ * 
  */
 int main(int argc, char **argv) {
 	bool finished = false;
 
 	printIntroduction(argc);
 
-    BinaryTree *bt = createBinaryTreeFromFile("pg4300.txt");
+    BinaryTree *bt = createBinaryTreeFromFile(argc, argv);
     printf("Binary tree created.\n\n");
 
     while (!finished) {
@@ -62,7 +63,7 @@ int main(int argc, char **argv) {
 		if(res) {
 			printf("\nWord was %20s\nAt line %21zu\nWord placement in line %6zu\nLine total length %11zu\n\n", res->val, res->lineNum, res->wordNum, res->lineLength);
 		} else {
-			printf("There are no occurences of the word \"%s\" in the file \"%s\".\n", argv[2], argv[1]);
+			printf("There are no occurences of the word \"%s\" in the file \"%s\".\n\n", argv[2], argv[1]);
 		}
 
 		if(searchWord) {
@@ -70,7 +71,7 @@ int main(int argc, char **argv) {
 		}
     } 
 
-	//free tree
+    //cleanup
 	freeTree(bt->node);
 	closeFileScanner();
 
