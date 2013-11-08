@@ -12,7 +12,8 @@
 
  void printIntroduction(int argc) {
 	printf("\n\nWelcome, to the Scan-O-Matic Machine, that's SOMM for short.\n");
-	printf("We see you want to have %d files scanned.\n\n", (argc-1));
+	printf("We see you want to have %d files scanned.\n", (argc-1));
+	printf("Scanning files...\n\n");
 
 }
 
@@ -23,16 +24,13 @@ void explainSearch() {
 }
 
 const int MAX_SEARCH_WORD = 80;
-char* readSearchInput(bool *finished) {
-	char* searchWord = malloc(sizeof(char)*MAX_SEARCH_WORD);
+void readSearchInput(bool *finished, char *searchWord) {
 
 	scanf("%s", searchWord);
 
 	if (strncmp(searchWord, "q", MAX_SEARCH_WORD) == 0) {
 		*finished = true;
 	}
-
-	return searchWord;
 }
 
 /* When running main the first argument (ignoring the execute argument itself) should
@@ -45,15 +43,19 @@ int main(int argc, char **argv) {
 
 	printIntroduction(argc);
 
-    BinaryTree *bt = createBinaryTreeFromFile(argv[1]);
+    BinaryTree *bt = createBinaryTreeFromFile("pg4300.txt");
     printf("Binary tree created.\n\n");
 
     while (!finished) {
-    	char *searchWord;
+		char *searchWord = malloc(sizeof(char)*MAX_SEARCH_WORD);
 
     	explainSearch();
-    	searchWord = readSearchInput(&finished);
-    	if (finished) break;
+    	readSearchInput(&finished, searchWord);
+
+    	if (finished) {
+    		free(searchWord);
+    		break;
+    	}
 
 	    BinaryNode *res = search(&bt->node, searchWord);
 
@@ -63,7 +65,9 @@ int main(int argc, char **argv) {
 			printf("There are no occurences of the word \"%s\" in the file \"%s\".\n", argv[2], argv[1]);
 		}
 
-		if(searchWord) free(searchWord);
+		if(searchWord) {
+			free(searchWord);
+		}
     } 
 
 	//free tree
