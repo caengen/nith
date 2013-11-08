@@ -6,3 +6,5 @@
  */
 
 BinaryTree* createBinaryTreeFromFile(char *);
+
+void closeFileScanner(void);
