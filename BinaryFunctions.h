@@ -2,11 +2,14 @@
 #include <stdbool.h>
 #include "binaryNode.h"
 #include "binaryTree.h"
+/* @author 		Cengen
+ * @last edit	08/11/2013
+ */
+ 
+void add(BinaryNode **, BinaryNode *, char *, size_t, size_t, size_t);
 
-void rec_add(BinaryNode **, BinaryNode *, char *, size_t, size_t, size_t);
+BinaryNode * search(BinaryNode **, char *);
 
-BinaryNode * rec_search(BinaryNode **, char *);
+void freeTree(BinaryNode *tree);
 
-bool bf_delete(BinaryTree *, BinaryNode *);
-
-void printTree(BinaryNode **);
+bool delete(BinaryTree *, BinaryNode *);
