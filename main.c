@@ -5,7 +5,7 @@
 #include "binaryNode.h"
 #include "binaryTree.h"
 #include "FileScanner.h"
-#include "BinaryFunctions.h"
+#include "BinaryTreeFunctions.h"
 /* @author 		Cengen
  * @last edit	08/11/2013
  */
