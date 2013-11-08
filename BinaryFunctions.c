@@ -5,18 +5,25 @@
 #include "binaryNode.h"
 #include "binaryTree.h"
 #include "BinaryFunctions.h"	
+/* @author 		Cengen
+ * @last edit	08/11/2013
+ */
 
 
-void rec_add(BinaryNode **n, BinaryNode * parent, char *word, size_t lineNum, size_t lineLength, size_t wordNum) {
+/* Recursive add function for a BinaryNode and its children
+ * Function parameters are a double pointer to a node and the data needed to complete
+ * a BinaryNode
+ *
+ * If the double pointer is NULL, we insert our data to that node
+ * if it is not NULL we continue searching through its children, left and right
+ */
+void add(BinaryNode **n, BinaryNode * parent, char *val, size_t lineNum, size_t lineLength, size_t wordNum) {
 	BinaryNode *node = *n;
 
 	if(!node) {
 		node = malloc(sizeof(BinaryNode));
-
-        //char buf[128];
-
-        node->key = malloc(sizeof(char)*128);
-        strncpy(node->key, word, 128);
+        node->val = malloc(sizeof(char)*128);
+        strncpy(node->val, val, 128);
 		node->left = node->right = NULL;
 		node->lineNum = lineNum;
 		node->wordNum = wordNum;
@@ -26,16 +33,25 @@ void rec_add(BinaryNode **n, BinaryNode * parent, char *word, size_t lineNum, si
         *n = node;
     }
 
-		if (strncmp(word, node->key,100) > 0) {
-            rec_add(&node->right, node, word, lineNum, lineLength, wordNum);
-		} else if(strncmp(word, node->key,100) < 0) {
-            rec_add(&node->left, node, word, lineNum, lineLength, wordNum);
-		}
-
-
+	if (strncmp(val, node->val,100) > 0) {
+        add(&node->right, node, val, lineNum, lineLength, wordNum);
+	} else if(strncmp(val, node->val,100) < 0) {
+        add(&node->left, node, val, lineNum, lineLength, wordNum);
+	}
 }
 
-BinaryNode * rec_search(BinaryNode **n, char *word) {
+/* Recursive search function for a BinaryNode and its children
+ * Has two parameters, a double pointer to a BinaryNode and a char pointer to the word
+ * to search for.
+ * 
+ * We compare the struct BinaryNode's val to our word.
+ * strncmp returns either a negative, a positive or a zero in cases of the 
+ * first argument being less than, more than or equal to the second argument.
+ * If the first argument is less than, we return the search result of the left node
+ * and opposite if it is more than.
+ *
+ */
+BinaryNode * search(BinaryNode **n, char *word) {
 	BinaryNode *node = *n;
 
 
@@ -43,29 +59,32 @@ BinaryNode * rec_search(BinaryNode **n, char *word) {
 		return NULL;
 	}
 
-	int r = strncmp(word, node->key,100);
+	int r = strncmp(word, node->val,100);
 
     if (r > 0) {
-        return rec_search(&node->right, word);
+        return search(&node->right, word);
     } else if(r < 0) {
-        return rec_search(&node->left, word);
+        return search(&node->left, word);
 	}
 	
-	printf("Did find word\n");
+	printf("Word found, printing data:\n");
 	return node;
 }
 
-bool bf_delete(BinaryTree *tree, BinaryNode *other) {
+bool delete(BinaryTree *tree, BinaryNode *other) {
 	return false;
 }
 
-void printTree(BinaryNode **n) {
-	BinaryNode *node = *n;
+/* Recursive function for freeing the pointers in our binary tree.
+ *
+ */
+void freeTree(BinaryNode *node) {
 
-	if (node == NULL) {
-		return;
-	} else {
-		printf("%s : %zu\n", node->key, node->lineNum);
-		printTree(&node->right);
-	}
+	if (!node) { return; }
+
+	if (node->left)  freeTree(node->left);
+	if (node->right) freeTree(node->right);
+
+	free(node->val);
+	free(node);
 }

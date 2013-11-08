@@ -3,16 +3,33 @@
 #include "binaryTree.h"
 #include "BinaryFunctions.h"
 #include "FileScanner.h"
+/* @author 		Cengen
+ * @last edit	08/11/2013
+ */
 
-int main(void) {
+
+/* When running main the first argument (ignoring the ./innt itself) should
+ * be the file.txt you want read, and the second argument should be the word
+ * you want to search for.
+ *
+ */
+int main(int argc, char** argv) {
 	
-    BinaryTree *bt = createBinaryTree("./pg4300.txt");
-    printf("Ferdig å legge inn!\n");
-    BinaryNode *res = rec_search(&bt->node, "Nationalgymnasiummuseumsanatoriumandsuspensoriumsordinaryprivatdocent");
+    BinaryTree *bt = createBinaryTreeFromFile("pg4300.txt");
+
+    printf("Binary tree created.\n");
+
+    BinaryNode *res = search(&bt->node, "penis");
 
 	if(res) {
-		printf("Result was key=%s, line=%zu, word=%zu, length=%zu\n", res->key, res->lineNum, res->wordNum, res->lineLength);
+		printf("Word was %20s\nAt line %21zu\nWord placement in line %6zu\nLine total length %11zu\n", res->val, res->lineNum, res->wordNum, res->lineLength);
+	} else {
+		printf("There are no occurences of the word \"%s\" in the file \"%s\".\n", argv[2], argv[1]);
 	}
+
+	//free tree
+	freeTree(bt->node);
+	if(bt) free(bt);
 
 	return EXIT_SUCCESS; 
 }
