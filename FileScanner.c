@@ -13,6 +13,9 @@
 
 char *delims = " ,.-_:;\n!?/&%()[]*'\"$@#+";
 char *word;
+char * line;
+FILE * fp;
+BinaryTree *tree;
 const int MAX_LINE_SIZE = 81;
 
 /* Function responsible for reading lines from a file, and sending
@@ -20,14 +23,12 @@ const int MAX_LINE_SIZE = 81;
  * 
  */
 BinaryTree * createBinaryTreeFromFile(char *path) {
-	FILE * fp;
-	char * line = malloc(sizeof(char)*MAX_LINE_SIZE);
 	size_t len = 0;
 	size_t lineNum = 1;
 	size_t lineLength;
 
-    BinaryTree *tree = malloc(sizeof(BinaryTree));
-    tree->node = NULL;
+	tree = malloc(sizeof(BinaryTree));
+	tree->node = NULL;
 	tree->size = 0;
 
 
@@ -43,15 +44,18 @@ BinaryTree * createBinaryTreeFromFile(char *path) {
 		int wordNum = 1;
 		//We iterate through each word in the line
 		while(word) {
-            add(&tree->node, NULL, word, lineNum, lineLength, wordNum);
+			add(&tree->node, NULL, word, lineNum, lineLength, wordNum);
 			word = strtok(NULL, delims);
 			wordNum++;
-        }
-        lineNum++;
+		}
+		lineNum++;
 	}
 
-	if (line) free(line);
-	if (word) free(word);
-
 	return tree;
+}
+
+void closeFileScanner(void) {
+	if(line) free(line);
+	if (tree) free(tree);
+	if (fp) fclose(fp);
 }

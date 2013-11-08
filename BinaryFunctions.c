@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include "binaryNode.h"
@@ -22,21 +23,21 @@ void add(BinaryNode **n, BinaryNode * parent, char *val, size_t lineNum, size_t 
 
 	if(!node) {
 		node = malloc(sizeof(BinaryNode));
-        node->val = malloc(sizeof(char)*128);
-        strncpy(node->val, val, 128);
+		node->val = malloc(sizeof(char)*128);
+		strncpy(node->val, val, 128);
 		node->left = node->right = NULL;
 		node->lineNum = lineNum;
 		node->wordNum = wordNum;
 		node->lineLength = lineLength;
-        node->parent = parent;
+		node->parent = parent;
 
-        *n = node;
-    }
-
-	if (strncmp(val, node->val,100) > 0) {
-        add(&node->right, node, val, lineNum, lineLength, wordNum);
-	} else if(strncmp(val, node->val,100) < 0) {
-        add(&node->left, node, val, lineNum, lineLength, wordNum);
+		*n = node;
+	}
+	
+	if ( strncasecmp(val, node->val,100) > 0) {
+		add(&node->right, node, val, lineNum, lineLength, wordNum);
+	} else if( strncasecmp(val, node->val,100) < 0) {
+		add(&node->left, node, val, lineNum, lineLength, wordNum);
 	}
 }
 
@@ -55,16 +56,16 @@ BinaryNode * search(BinaryNode **n, char *word) {
 	BinaryNode *node = *n;
 
 
-    if(!node) {
+	if(!node) {
 		return NULL;
 	}
 
-	int r = strncmp(word, node->val,100);
+	int r =  strncasecmp(word, node->val,100);
 
-    if (r > 0) {
-        return search(&node->right, word);
-    } else if(r < 0) {
-        return search(&node->left, word);
+	if (r > 0) {
+		return search(&node->right, word);
+	} else if(r < 0) {
+		return search(&node->left, word);
 	}
 	
 	printf("Word found, printing data:\n");
