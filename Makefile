@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS=-std=c11 -Wall -Werror -g
-SOURCES=
+CFLAGS=-std=c99 -Wall -Werror -g
+SOURCES=main.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=innf
 
