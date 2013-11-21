@@ -1,7 +1,7 @@
 typedef struct {
 
    char  idlength;            //1 byte
-   char  colormaptype;       //1 byte
+   char  colormaptype;        //1 byte
    char  imagetype;           //1 byte
    /* Color map specification 5 bytes */
    short int colormapentry;   //2 bytes

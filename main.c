@@ -63,8 +63,8 @@ const char COLOR_MAPPED = 1;
 const char UNCOMPRESSED = 2;
 const char UNCOMPRESSED_B_W = 3;
 const char RLE_COLOR_MAPPED = 9;
-const char RLE_UNCOMPRESSED = 10;
-const char RLE_MAPPED_B_W = 11;
+const char RLE_UNCOMPRESSED = 10
+;const char RLE_MAPPED_B_W = 11;
 Pixel * load_image(char *filename, TGAHeader *header, Pixel *img) {
 	unsigned char *pixl;
 	const unsigned char headerSize = 18, imgIDSize = 255, colorMapData = (header->colormapentry * header->colormaplength) / 8;
@@ -88,9 +88,18 @@ Pixel * load_image(char *filename, TGAHeader *header, Pixel *img) {
 	//entry size and color map length to find the size.
 	fseek(fp, headerSize + imgIDSize + colorMapData, SEEK_SET);
 
+	while(header->width * header->height) {
+		add_pxl_to_img(itr, pixl, header, img);
+
+		itr++;
+	}
 	
 
 	fclose(fp);
+}
+
+void add_pxl_to_img() {
+
 }
 
 void convert_grayscale(TGAHeader *headin, Pixel *imgin,TGAHeader *headout, Pixel *imgout) {
