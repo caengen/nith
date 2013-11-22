@@ -6,7 +6,7 @@ typedef struct {
    /* Color map specification 5 bytes */
    short int colormapentry;   //2 bytes
    short int colormaplength;  //2 bytes
-   char  colourmapentrysize;  //1 byte
+   char  colormapentrysize;  //1 byte
    /* Image specification 10 bytes */
    short int xorigin;         //2 bytes
    short int yorigin;         //2 bytes
