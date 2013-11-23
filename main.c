@@ -36,15 +36,21 @@ void load_header(char* filename, TGAHeader *header) {
 	fclose(fp);
 }
 
-void malloc_image(Pixel *img, int width, int height) {
+void malloc_image(Pixel **imgin, int width, int height) {
 	//We assume the image data contains only whole img
 	//therefore the total size of the image
+	Pixel *img = *imgin;
 	img = malloc(width * height * sizeof(Pixel));
+
 	for (int i = 0; i < width * height; ++i) {
-		img[i].r = 0;
-		img[i].g = 0;
-		img[i].b = 0;
-		img[i].a = 0;
+		Pixel p = {
+			.r = 0,
+			.g = 0,
+			.b = 0,
+			.a = 0
+		};
+
+		img[i] = p;
 	}
 }
 
@@ -61,11 +67,11 @@ void processability(TGAHeader *header) {
  * 32 bit images will have 4 channels consisting of 8 bits each, meaning r, g, b, a
  * where a is the alpha for each pixel.
  */
-void add_pixl_to_img(uint32_t itr, FILE* fp, char pixeldepth, Pixel *img) {
+void add_pixl_to_img(uint32_t itr, FILE* fp, char pixeldepth, Pixel **imgin) {
 	int i;
-
-	/* DEBUG  &img[itr].r */
 	
+	Pixel *img = *imgin;
+
 	if (pixeldepth == 24) {
 		for (i = pixeldepth / 8; i > 0; i--) {
 			img[itr].r = fgetc(fp);
@@ -90,7 +96,7 @@ const char UNCOMPRESSED_B_W = 3;
 const char RLE_COLOR_MAPPED = 9;
 const char RLE_UNCOMPRESSED = 10
 ;const char RLE_MAPPED_B_W = 11;
-void load_image(char *filename, TGAHeader *header, Pixel *img) {
+void load_image(char *filename, TGAHeader *header, Pixel **img) {
 	const unsigned char headerSize = 18, imgIDSize = 255, colorMapData = (header->colormapentry * header->colormaplength) / 8;
 	uint32_t itr = 0;
 
@@ -189,12 +195,26 @@ int main(void) {
 	
 	load_header(filename, &headin);
 
-	malloc_image(imgin, headin.imgwidth, headin.imgheight);
-	malloc_image(imgout, headin.imgwidth, headin.imgheight);
+	//malloc_image(&imgin, headin.imgwidth, headin.imgheight);
+
+	imgin = malloc(headin.imgwidth * headin.imgheight * sizeof(Pixel));
+
+	for (int i = 0; i < headin.imgwidth * headin.imgheight; ++i) {
+		Pixel p = {
+			.r = 0,
+			.g = 0,
+			.b = 0,
+			.a = 0
+		};
+
+		imgin[i] = p;
+	}
+
+	malloc_image(&imgout, headin.imgwidth, headin.imgheight);
 
 	processability(&headin);
  	
- 	load_image(filename, &headin, imgin);
+ 	load_image(filename, &headin, &imgin);
 
  	convert_grayscale(&headin, imgin, &headout, imgout);
 
