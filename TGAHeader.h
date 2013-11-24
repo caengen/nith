@@ -10,8 +10,8 @@ typedef struct {
    /* Image specification 10 bytes */
    short int xorigin;         //2 bytes
    short int yorigin;         //2 bytes
-   short int imgwidth;        //2 bytes
-   short int imgheight;       //2 bytes
+   short imgwidth;        //2 bytes
+   short imgheight;       //2 bytes
    char  pixeldepth;          //1 byte
    char  imagedescriptor;     //1 byte
 } TGAHeader;
