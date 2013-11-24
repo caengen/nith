@@ -1,16 +1,18 @@
+#pragma once
+
 typedef struct {
-   char  idlength;        //1 byte
-   char  colormaptype;    //1 byte
-   char  imagetype;       //1 byte
+   char  idlength;
+   char  colormaptype;
+   char  imagetype;
    /* Color map specification 5 bytes */
-   short colormapentry;   //2 bytes
-   short colormaplength;  //2 bytes
-   char  colormapentrysize;  //1 byte
+   short colormapentry;
+   short colormaplength;
+   char  colormapentrysize;
    /* Image specification 10 bytes */
-   short xorigin;         //2 bytes
-   short yorigin;         //2 bytes
-   short imgwidth;        //2 bytes
-   short imgheight;       //2 bytes
-   char  pixeldepth;      //1 byte
-   char  imagedescriptor; //1 byte
+   short xorigin;
+   short yorigin; 
+   short imgwidth;
+   short imgheight;
+   char  pixeldepth;
+   char  imagedescriptor;
 } TGAHeader;
