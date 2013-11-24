@@ -14,3 +14,9 @@ $(EXECUTABLE) : $(OBJECTS)
 
 clean:
 	rm -rf *.o $(EXECUTABLE)
+
+remake: $(SOURCES) $(EXECUTABLE)
+
+	rm -rf *.o $(EXECUTABLE)
+	$(CC) -c $(CFLAGS) $< -o $@
+

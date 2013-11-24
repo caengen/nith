@@ -3,47 +3,41 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <sys/types.h>
+#include <string.h>
 #include "Pixel.h"
 #include "TGAHeader.h"
 
-void save_image(char*, TGAHeader, char*, int);
-
-void free_pixel(Pixel **pixel) {
-	if (pixel) free(pixel);
-}
+void save_image(char *, TGAHeader, char *, int, char *);
 
 //Can we process the current img
-void processability(TGAHeader *header) {
-
-}
-
-/* 24 bit images will have 3 channels consisting of 8 bits each, meaning r, g, b
- * 32 bit images will have 4 channels consisting of 8 bits each, meaning r, g, b, a
- * where a is the alpha for each pixel.
- */
-int add_pixl_to_img(/*uint32_t itr, FILE* fp, char pixeldepth, */int r, int g, int b) {
-	//int i;
-
-	return ((((int)r * 30) + ((int)g * 59) + ((int)b * 11)) / 100);
-
-	/*if (pixeldepth == 24) {
-		for (i = pixeldepth / 8; i > 0; i--) {
-			img[itr].r = fgetc(fp);
-			img[itr].g = fgetc(fp);
-			img[itr].b = fgetc(fp);
-			img[itr].a = fgetc(fp);
-		}
+void evaluate_image(char imagetype) {
+	if (imagetype != 2) {
+		fprintf(stderr, "The image type is not supported.");
+		exit(EXIT_FAILURE);
 	}
-	else if(pixeldepth == 32) {
-		for (i = pixeldepth / 8; i > 0; i--) {
-			img[itr].r = fgetc(fp);
-			img[itr].g = fgetc(fp);
-			img[itr].b = fgetc(fp);
-			img[itr].a = fgetc(fp);
-		}
-	}*/
 }
 
+int convert_grayscale16(int g, int a) {
+	return (int)(g * (255 / a));
+}
+
+//Y = 0.299 * R + 0.587 * G + 0.114 * B
+int convert_grayscale24(int r, int g, int b) {
+	int luma = (((int)r * 0.299) + ((int)g * 0.587) + ((int)b * 0.114));
+	if (luma > 255) luma = 255;
+	return luma;
+}
+
+/* 
+* ConversionFactor = 255 / (NumberOfShades - 1)
+* AverageValue = (Red + Green + Blue) / 3
+* Gray = Integer((AverageValue / ConversionFactor) + 0.5) * ConversionFactor
+* source: http://www.tannerhelland.com/3643/
+*/
+int convert_grayscale32(int r, int g, int b, int a) {
+	double avgval = convert_grayscale24(r, g, b);
+	return (int)(avgval * 255/a);
+}
 
 unsigned int getFileSize(FILE *file) {
 	unsigned int filesize;
@@ -51,11 +45,11 @@ unsigned int getFileSize(FILE *file) {
 		filesize = ftell(file);
 		rewind(file);
 	} else {
-		printf("File can not be read.");
+		fprintf(stderr, "File size can not be read.");
 		exit(EXIT_FAILURE);
 	}
-	return filesize;
 
+	return filesize;
 }
 
 const char COLOR_MAPPED = 1;
@@ -64,95 +58,85 @@ const char UNCOMPRESSED_B_W = 3;
 const char RLE_COLOR_MAPPED = 9;
 const char RLE_UNCOMPRESSED = 10;
 const char RLE_MAPPED_B_W = 11;
-void load_image(char *filename, TGAHeader *header, char *img) {
+void load_image(char *filename, TGAHeader *header) {
 	if (!header) {
-		fprintf(stderr, "Non-valid TGAHeader argument");
+		fprintf(stderr, "Non-valid TGAHeader argument\n");
 		exit(EXIT_FAILURE);
 	}
 
 	FILE *fp;
 	fp = fopen(filename, "r");
 	if (!fp) {
-		fprintf(stderr, "Unable to open fp %s", filename);
+		fprintf(stderr, "Unable to open fp %s\n", filename);
 		exit(EXIT_FAILURE);
 	}
 
 	unsigned int colormapsize, imgsize, imgdatasize, filesize, headsize = 18, footsize = 26;
-	char *imgid, *imgmap, *imgbfr, *footer, *imgout;
+	char *imgid, *imgmap, *imgbuf, *footer, *grayscaleimg;
 	int i;
-	unsigned char r, g, b;
+	unsigned char r, g, b, a;
 
 	filesize = getFileSize(fp);
-
-	imgid = malloc(256 * sizeof(char));
-	if (header->idlength > 0) {
-		fread(imgid, sizeof(char), header->idlength, fp);
-	}
 
 	colormapsize = header->colormaplength * header->colormapentrysize / 8;
 	imgsize = header->imgheight * header-> imgwidth;
 	imgdatasize = filesize - (headsize + footsize + header->idlength + colormapsize);
 
+	imgid = malloc(256 * sizeof(char));
 	imgmap = malloc(colormapsize * sizeof(char));
-	imgbfr = malloc(imgdatasize * sizeof(char));
+	imgbuf = malloc(imgdatasize * sizeof(char));
 	footer = malloc(footsize * sizeof(char));
-	imgout = malloc(imgsize * sizeof(char));
+	grayscaleimg = malloc(imgsize * sizeof(char));
 
 	fseek(fp, headsize, SEEK_SET);
+	if (header->idlength > 0) {
+		fread(imgid, sizeof(char), header->idlength, fp);
+		printf("%s\n", imgid);
+	}
 	fread(imgmap, sizeof(char), colormapsize, fp);
-	fread(imgbfr, sizeof(char), imgdatasize, fp);
+	fread(imgbuf, sizeof(char), imgdatasize, fp);
 	fread(footer, sizeof(char), footsize, fp);
 
-
-	for (i = 0; i < imgsize; i++) 
-	{
-		r = imgbfr[i * 3];
-		g = imgbfr[i * 3 + 1];
-		b = imgbfr[i * 3 + 2];
-		imgout[i] = add_pixl_to_img(r, g, b);
+	if (header->pixeldepth == 16) {
+		for (i = 0; i < imgsize; i++) {
+			g = imgbuf[i * 2];
+			a = imgbuf[i * 2 + 1];
+			grayscaleimg[i] = convert_grayscale16(g, a);
+		}		
+	}
+	else if (header->pixeldepth == 24) {	
+		for (i = 0; i < imgsize; i++) {
+			r = imgbuf[i * 3];
+			g = imgbuf[i * 3 + 1];
+			b = imgbuf[i * 3 + 2];
+			grayscaleimg[i] = convert_grayscale24(r, g, b);
+		}
+	} else if(header->pixeldepth == 32) {
+		for (i = 0; i < imgsize; i++) {
+			r = imgbuf[i * 4];
+			g = imgbuf[i * 4 + 1];
+			b = imgbuf[i * 4 + 2];
+			a = imgbuf[i * 4 + 3];
+			//
+			grayscaleimg[i] = convert_grayscale32(r, g, b, a);
+		}		
 	}
 
-	save_image("lol2.tga", *header, imgout, imgsize);
+	save_image(filename, *header, grayscaleimg, imgsize, imgid);
 	
 	free(imgid);
 	free(imgmap);
-	free(imgbfr);
+	free(imgbuf);
 	free(footer);
-	free(imgout);
+	free(grayscaleimg);
 	fclose(fp);
 }
 
+short fread_smallendian(FILE *fp) {
+	short right = fgetc(fp) & 0x00ff;
+	short left = (fgetc(fp) << 8) & 0xff00;
 
-
-
-void convert_grayscale(TGAHeader *headin, Pixel *imgin, TGAHeader *headout, Pixel *imgout) {
-	headout->idlength = headin->idlength;
-	headout->colormaptype = 0;
-	headout->imagetype = UNCOMPRESSED_B_W;
-	headout->colormapentry = headin->colormapentry;
-	headout->colormaplength = headin->colormaplength;
-	headout->colormapentrysize = 24;
-	headout->xorigin = headin->xorigin;
-	headout->yorigin = headin->yorigin;
-	headout->imgwidth = headin->imgwidth;
-	headout->imgheight = headin->imgheight;
-	headout->pixeldepth = 8;
-	headout->imagedescriptor = 0;
-
-	int i;
-
-	for (i = 0; i < (headin->imgwidth * headin->imgheight); ++i) {	
-		float luma = 0.299 * imgin[i].r + 0.587 * imgin[i].g + 0.114 * imgin[i].b;
-		if (luma > 255) luma = 255;
-
-		int intluma = (int) luma;
-
-		imgout[i].r = intluma;
-		imgout[i].g = intluma;
-		imgout[i].b = intluma;
-		imgout[i].a = 255;
-	}
-
+	return right | left;
 }
 
 void load_header(char* filename, TGAHeader *header) {
@@ -160,209 +144,95 @@ void load_header(char* filename, TGAHeader *header) {
 
 	fp =  fopen(filename, "r");
 	if (!fp) {
-		fprintf(stderr, "Unable to open fp %s", filename);
+		fprintf(stderr, "Unable to open fp %s\n", filename);
 		exit(EXIT_FAILURE);
 	}
 
-	short left;
-	short right;
-
 	//Read the header. 
 	//The total size of the header is 18 bytes.
-
-	/* DEBUG: LAG METODE */
 	header->idlength = fgetc(fp);
 	header->colormaptype = fgetc(fp);
 	header->imagetype = fgetc(fp);
-
-	right = fgetc(fp) & 0x00ff;
-	left = (fgetc(fp) << 8) & 0xff00;
-	header->colormapentry = right | left;
-
-	right = fgetc(fp) & 0x00ff;
-	left = (fgetc(fp) << 8) & 0xff00;
-	header->colormaplength = right | left;
-
+	header->colormapentry = fread_smallendian(fp);
+	header->colormaplength = fread_smallendian(fp);
 	header->colormapentrysize = fgetc(fp);
-
-	right = fgetc(fp) & 0x00ff;
-	left = (fgetc(fp) << 8) & 0xff00;	
-	header->xorigin = right | left;
-
-	right = fgetc(fp) & 0x00ff;
-	left = (fgetc(fp) << 8) & 0xff00;	
-	header->yorigin = right | left;
-
-	right = fgetc(fp) & 0x00ff;
-	left = (fgetc(fp) << 8) & 0xff00;	
-	header->imgwidth = right | left;
-
-	right = fgetc(fp) & 0x00ff;
-	left = (fgetc(fp) << 8) & 0xff00;	
-	header->imgheight = right | left;
-
+	header->xorigin = fread_smallendian(fp);
+	header->yorigin = fread_smallendian(fp);
+	header->imgwidth = fread_smallendian(fp);
+	header->imgheight = fread_smallendian(fp);
 	header->pixeldepth = fgetc(fp);
 	header->imagedescriptor = fgetc(fp);
 
-	//close/free stuff
 	fclose(fp);
 }
 
 char* merge_convert_header(TGAHeader header, char *m) {
-	header.colormaptype = (char)0;
-	header.colormaplength = (char)0;
-	header.colormapentrysize = (char)0;
+	header.colormaptype = 0;
+	header.colormaplength = 0;
+	header.colormapentrysize = 0;
 	header.imagetype = UNCOMPRESSED_B_W;
-	header.pixeldepth = (char)8;
+	header.pixeldepth = 8;
 
-	char merged[12];
-
-	merged[0] =  (char)((header.colormapentry >> 8) & 0x00ff);
-	merged[1] =  (char)(header.colormapentry & 0x00ff);
-	merged[2] =  (char)(header.colormaplength >> 8) & 0x00ff;
-	merged[3] =  (char)(header.colormaplength) & 0x00ff;
-	merged[4] =  (char)(header.xorigin) & 0x00ff;
-	merged[5] =  (char)(header.xorigin >> 8) & 0x00ff;
-	merged[6] = (char)(header.yorigin) & 0x00ff;
-	merged[7] = (char)(header.yorigin >> 8) & 0x00ff;
-	merged[8] = (char)(header.imgwidth >> 8) & 0x00ff;				
-	merged[9] = (char)(header.imgwidth) & 0x00ff;	
-	merged[10] = (char)(header.imgheight >> 8) & 0x00ff;				
-	merged[11] = (char)(header.imgheight) & 0x00ff;
+	//endre til variabler
+	char cme_r =  (header.colormapentry >> 8) & 0x00ff;
+	char cme_l =  header.colormapentry & 0x00ff;
+	char cml_r =  (header.colormaplength >> 8) & 0x00ff;
+	char cml_l =  header.colormaplength & 0x00ff;
+	char xo_r =  header.xorigin & 0x00ff;
+	char xo_l =  (header.xorigin >> 8) & 0x00ff;
+	char yo_r = header.yorigin & 0x00ff;
+	char yo_l = (header.yorigin >> 8) & 0x00ff;
+	char iw_r = (header.imgwidth >> 8) & 0x00ff;
+	char iw_l = header.imgwidth & 0x00ff;
+	char ih_r = (header.imgheight >> 8) & 0x00ff;
+	char ih_l = header.imgheight & 0x00ff;
 
 	snprintf(m, 19, "%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c", 
-		header.idlength,
-		header.colormaptype,
-		header.imagetype,
-		merged[1],
-		merged[0],
-		merged[3],
-		merged[2],
+		header.idlength, header.colormaptype, header.imagetype,
+		cme_l, cme_r,
+		cml_l, cml_r,
 		header.colormapentrysize,
-		merged[5],
-		merged[4],
-		merged[7],
-		merged[6],
-		merged[9],
-		merged[8],
-		merged[11],
-		merged[10],
+		xo_l, xo_r,
+		yo_l, yo_r,
+		iw_l, iw_r,
+		ih_l, ih_r,
 		header.pixeldepth,															
 		header.imagedescriptor);	
 	
 	return m;
 }
 
-void save_image(char *filename, TGAHeader headout, char* data, int imgSize/*Pixel *imgout*/) {
+void save_image(char *filename, TGAHeader header, char* imgout, int imgSize, char *imageid) {
 
-	FILE *fp = fopen("lol.tga", "w");
+	char newfilename[128];
+	char *fileprefix = "grayscale_";
+	snprintf(newfilename, sizeof(newfilename), "%s%s", fileprefix, filename);
 
-	//put header into file
+	FILE *fp = fopen(newfilename, "w");
+	if (!fp) {
+		fprintf(stderr, "Unable to create/overwrite file %s\n", newfilename);
+	}
+
 	char *merged = malloc(sizeof(char)*18);
-	merged = merge_convert_header(headout, merged);
+	merged = merge_convert_header(header, merged);
 
 	fwrite(merged, sizeof(char), 18, fp);
-	fwrite(data, sizeof(char), imgSize, fp);
-
-	//put image data into file
-	/*int i;
-
-	for (i = 0; i < headout.imgwidth * headout.imgheight; ++i) {
-		fwrite(&imgout[i].r, sizeof(char), 1, fp);
-		fwrite(&imgout[i].g, sizeof(char), 1, fp);
-		fwrite(&imgout[i].b, sizeof(char), 1, fp);
-	}*/
+	if (header.idlength > 0) fwrite(imageid, sizeof(char), header.idlength, fp);
+	fwrite(imgout, sizeof(char), imgSize, fp);
 
 	free(merged);
 	fclose(fp);
 }
 
-void malloc_pixel(Pixel **pixel) {
-	//We assume the image data contains only whole img
-	//therefore the total size of the image
-	Pixel *p = malloc(sizeof(Pixel));
+int main(int argc, char **argv) {
 
-	p->r = 0;
-	p->g = 0;
-	p->b = 0;
-	p->a = 0;
-
-	*pixel = p;
+	TGAHeader header;
 	
-}
+	load_header(argv[1], &header);
 
-int main(void) {
-	char * filename = "Calvin-Hobbes.tga";
+	evaluate_image(header.imagetype);
 
-	TGAHeader headin;
-	//TGAHeader headout;
-	
-	load_header(filename, &headin);
+	load_image(argv[1], &header);
 
-	processability(&headin);
-
-	int width = headin.imgwidth;
-	int height= headin.imgheight;
-
-	Pixel *imgin;
-	Pixel *imgout;
-	imgin = malloc(width * height * sizeof(imgin));
-	imgout = malloc(width * height * sizeof(imgout));
-
-	load_image(filename, &headin, imgin);
-
-	//const unsigned char headerSize = 18, imgIDSize = 255; 
-	//uint32_t colorMapData = (headin.colormapentry * headin.colormaplength) / 8;
-	/*uint32_t itr = 0;
-
-
-	FILE *fp;
-	fp = fopen(filename, "r");
-	if (!fp) {
-		fprintf(stderr, "Unable to open fp %s", filename);
-		exit(EXIT_FAILURE);
-	}
-
-	//We skip over the image ID data it is 256 bytes long
-	//We also ignore the Color Map Data field, however it
-	//is variable lengthed and we need to use color map
-	//entry size and color map length to find the size.
-	//fseek(fp, headerSize + imgIDSize + colorMapData, SEEK_SET);
-
-	while(itr < headin.imgwidth * headin.imgheight) {
-		int i;
-
-		if (headin.pixeldepth == 24) {
-			for (i = headin.pixeldepth / 8; i > 0; i--) {
-				imgin[itr].r = fgetc(fp);
-				imgin[itr].g = fgetc(fp);
-				imgin[itr].b = fgetc(fp);
-				imgin[itr].a = fgetc(fp);
-			}
-		}
-		else if(headin.pixeldepth == 32) {
-			for (i = headin.pixeldepth / 8; i > 0; i--) {
-				imgin[itr].r = fgetc(fp);
-				imgin[itr].g = fgetc(fp);
-				imgin[itr].b = fgetc(fp);
-				imgin[itr].a = fgetc(fp);
-			}
-		}
-
-		itr++;
-	}
-	
-	fclose(fp);*/
-
- 	//convert_grayscale(&headin, imgin, &headout, imgout);
- 	//save_image(filename, headout, imgout);
-
-/*
-	for (i = 0; i < width * height; i++)
-	{
-		free_pixel(&imgin[i]);
-		free_pixel(&imgout[i]);
-	}
-*/
 	return EXIT_SUCCESS;
 }
