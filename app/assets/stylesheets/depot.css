@@ -143,5 +143,11 @@ text-align: center;
 }
 
 #side a {
-color: #bfb; font-size: small;
+  color: #bfb; 
+  font-size: small;
+}
+
+#side p {
+  color: #bfb;
+  font-size: small;
 }

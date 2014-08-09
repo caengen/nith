@@ -17,6 +17,8 @@
 			<a href="http://www..../faq">Questions</a><br /> 
 			<a href="http://www..../news">News</a><br />
 			<a href="http://www..../contact">Contact</a><br />
+			<% time = DateTime.now %>
+			<p><%= time.readable_inspect %></p>
 		</div>
 		<div id="main">
 			<%= yield %>
