@@ -19,6 +19,9 @@
 			<a href="http://www..../contact">Contact</a><br />
 			<% time = DateTime.now %>
 			<p><%= time.readable_inspect %></p>
+			<% if !session[:counter].nil? && session[:counter] > 5 %>
+				<p>You have visited <%= pluralize(session[:counter], 'time') %> without buying anything.</p>
+			<% end %>
 		</div>
 		<div id="main">
 			<%= yield %>
