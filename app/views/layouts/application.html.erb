@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Pragprog Books Online Store</title>
+	<%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
+	<%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+	<%= csrf_meta_tags %>
+</head>
+<body id="store" > 
+	<div id="banner">
+		<%= image_tag("logo.png") %>
+		<%= @page_title || "Pragmatic Bookshelf" %>
+	</div>
+	<div id="columns">
+		<div id="side">
+			<%= link_to 'Home', store_path %><br />
+			<a href="http://www..../faq">Questions</a><br /> 
+			<a href="http://www..../news">News</a><br />
+			<a href="http://www..../contact">Contact</a><br />
+			<% time = DateTime.now %>
+			<p><%= time.readable_inspect %></p>
+			<% if !session[:counter].nil? && session[:counter] > 5 %>
+				<p>You have visited <%= pluralize(session[:counter], 'time') %> without buying anything.</p>
+			<% end %>
+		</div>
+		<div id="main">
+			<%= yield %>
+		</div>
+	</div>
+</body>
+</html>
