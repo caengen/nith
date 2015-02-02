@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Created by IntelliJ IDEA.
+  User: bruker
+  Date: 06/12/13
+  Time: 10:45
+-->
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html">
+
+<head>
+    <title>Checkout</title>
+    <style type="text/css">
+        .pageHeading {
+            color:#FFF5C3;
+            font-family:"Segoe UI", sans-serif;
+            font-size: 70px;
+        }
+
+        .eggSheet {
+            padding: 50px 10px;
+            background-color: #FFF5C3;
+            box-shadow: 0 0 5px #888;
+        }
+
+        .sheetHeading {
+            font-family:"Segoe UI", sans-serif;
+            color: #FF7260;
+            font-weight: bold;
+        }
+
+        .sheetText {
+            color: #505050;
+            font-family: "Segoe UI", sans-serif;
+            font-weight: bold;
+            font-size: 30px;
+        }
+
+        .sheetBtn {
+            background-color: #FF7260;
+            color: #129793;
+            border: none;
+            font-family:"Segoe UI", sans-serif;
+            font-weight: bold;
+            font-size:20px;
+        }
+
+        .sheetBtn:hover{
+            background-color: #129793;
+            color: #FF7260;
+        }
+    </style>
+</head>
+
+<body bgcolor="#FF7260">
+    <div align="center">
+        <h:outputText align="center" styleClass="pageHeading" value="Checkout"/>
+        <br/>
+        <div class="eggSheet">
+            <h2 class="sheetHeading">That's a great combo!</h2>
+            <h:dataTable value="#{checkoutController.checkedFruit}" var="fruit">
+                <h:column>
+                    <h:outputText styleClass="sheetText" value="#{fruit.name}"/>
+                </h:column>
+            </h:dataTable>
+            <h2 class="sheetHeading">Your total:</h2>
+            <h:outputText align="center" styleClass="sheetText" value="#{checkoutController.total}$"/>
+            <h:form>
+                <h:commandButton styleClass="sheetBtn" value="Back to ordering" action="#{checkoutController.goBack}"/>
+            </h:form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core">
+
+<h:head>
+    <title>Salad Management</title>
+    <style type="text/css">
+        .pageHeading {
+            color:#FFF5C3;
+            font-family:"Segoe UI", sans-serif;
+            font-size: 70px;
+        }
+
+        .eggSheet {
+            padding: 50px 10px;
+            background-color: #FFF5C3;
+            box-shadow: 0 0 5px #888;
+        }
+
+        .sheetHeading {
+            font-family:"Segoe UI", sans-serif;
+            color: #FF7260;
+            font-weight: bold;
+        }
+
+        .sheetText {
+            color: #505050;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        .sheetBtn {
+            background-color: #FF7260;
+            color: #129793;
+            border: none;
+            font-family:"Segoe UI", sans-serif;
+            font-weight: bold;
+            font-size:20px;
+        }
+
+        .sheetBtn:hover{
+            background-color: #129793;
+            color: #FF7260;
+        }
+
+        .oldSalad {
+            background-color: #129793;
+            color: #FF7260;
+            font-size: 40px;
+            padding: 50px 10px;
+            box-shadow: 0 0 5px #888;
+        }
+    </style>
+</h:head>
+
+<body bgcolor="#FF7260">
+<div align="center">
+        <h:outputText align="center" styleClass="pageHeading" value="Welcome #{userController.user.id}"/>
+        <br />
+        <div class="eggSheet">
+            <h2 class="sheetHeading">Make something delicious!</h2>
+            <h3 class="sheetText">A salad must contain at least four tasty ingredients.</h3>
+            <h:form>
+                <h:dataTable value="#{fruitManagerController.fruitList}" var="fruit">
+                    <h:column>
+                        <h:panelGroup style="display:block; text-align: center;">
+                            <h:selectBooleanCheckbox value="#{fruitManagerController.checked[fruit]}"/>
+                            <h:outputLabel styleClass="sheetText" value="#{fruit.name}"/>
+                            <br />
+                            <i><h:outputText styleClass="sheetText" value="#{fruit.description}"/></i>
+                        </h:panelGroup>
+                    </h:column>
+                </h:dataTable>
+                <h:commandButton styleClass="sheetBtn" value="Order" action="#{fruitManagerController.submitFruitSalad}"/>
+            </h:form>
+        </div>
+        <div class="eggSheet">
+            <h2 class="sheetHeading">Greatest hits and misses!</h2>
+            <h:dataTable value="#{fruitManagerController.oldSalads}" var="salad">
+                    <h:column>
+                        <div class="oldSalad">
+                        <h:dataTable value="#{salad.fruits}" var="fruit">
+                            <h:column>
+                                <h:outputText styleClass="sheetText" value="#{fruit.name}"/>
+                            </h:column>
+                        </h:dataTable>
+                        </div>
+                    </h:column>
+            </h:dataTable>
+        </div>
+    </div>
+</body>
+</html>
